@@ -36,6 +36,7 @@ static volatile CDC_Wait_E CDC_Wait;
 static volatile CDC_State CDC_CurrentState;
 static volatile uint8_t CDC_SendSequence;
 static volatile uint8_t CDC_PlaySequence;
+static bool isActive = false;
 
 static QueueHandle_t uart_queue;
 static xQueueHandle timer_queue;
@@ -362,11 +363,13 @@ void TLCDCEmu::readHU(const uint8_t *data, uint16_t length){
 
 						if(CDC_RX_buffer[3] == 0x2C && CDC_RX_buffer[4] == 0xFF){
 							//ENTERING CDC MODE
+							isActive = true;
 							ESP_LOGI(LOG_TAG,"ENTERING CDC MODE");
 						}
 
 						if(CDC_RX_buffer[3] == 0x2C && CDC_RX_buffer[4] == 0x00){
 							//EXITING CDC MODE
+							isActive = false;
 							ESP_LOGI(LOG_TAG,"EXITING CDC MODE");
 						}
 					}
@@ -470,6 +473,14 @@ void TLCDCEmu::timer_evt_task(void *arg){
             ESP_LOGE(LOG_TAG,"Unknown timer handle");
         }
     }
+}
+
+bool TLCDCEmu::isItActive() {
+  if (isActive) {
+    return true;
+  } else {
+    return false;
+  }
 }
 
 #ifdef HEAP_DEBUGGING
