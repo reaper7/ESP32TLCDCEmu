@@ -81,6 +81,7 @@ class TLCDCEmu
 		~TLCDCEmu();
 		void init(int spdif_pin, int cdc_tx_pin, int cdc_rx_pin, const char * btName = "Tuner List CDC Emulator");
 		void talk();
+		bool isItActive();
 
 	private:
 		uint8_t CDC_SendPacket(uint8_t *data, uint8_t length, uint8_t retries);
